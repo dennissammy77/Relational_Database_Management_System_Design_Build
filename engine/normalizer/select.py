@@ -1,9 +1,6 @@
-import sqlparse
 from sqlparse.sql import IdentifierList, Identifier, Where, Comparison
 from sqlparse.tokens import Keyword, DML, DDL, Whitespace, Punctuation, Wildcard
-from enum import Enum
-from dataclasses import dataclass
-from typing import Union, Optional, List
+from typing import List
 from engine.normalizer.base import BaseStatement, SelectParts
 
 class SelectStatement(BaseStatement):

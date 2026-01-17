@@ -1,5 +1,6 @@
 import sqlparse
 from .select import SelectStatement
+from .create import CreateStatement
 from .base import StatementType
 
 class Normalizer:
@@ -12,6 +13,8 @@ class Normalizer:
         if stype == StatementType.SELECT:
             # print("Select statement: ", SelectStatement(self.parsed[0].tokens).normalize())
             return SelectStatement(self.parsed[0].tokens).normalize()
+        if stype == StatementType.CREATE:
+            return CreateStatement(self.parsed[0].tokens).normalize()
     
     def get_statement_type(self) -> StatementType:
         """

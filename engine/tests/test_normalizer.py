@@ -1,6 +1,6 @@
 import pytest
 from engine.normalizer.normalizer import Normalizer
-from engine.normalizer.base import SelectParts, WhereClause
+from engine.normalizer.base import SelectParts, WhereClause, CreateParts
 
 class TestSelectNormalization:
     def test_normalize_select_normal(self) -> None:
@@ -115,4 +115,3 @@ class TestCreateNormalization:
             columns=["id", "name"],
         )
 
-    

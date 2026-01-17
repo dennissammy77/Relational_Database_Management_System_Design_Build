@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Union, Optional
 from sqlparse.sql import Identifier, Where, Comparison
 from sqlparse.tokens import Keyword, DML, DDL, Punctuation
+from engine.types import ColumnDefParts
 
 class StatementType(str, Enum):
     CREATE = "CREATE"
@@ -24,6 +25,13 @@ class SelectParts:
     columns: list[str]
     table: str
     where: Optional[WhereClause]
+
+
+@dataclass
+class CreateParts:
+    table: str
+    columns: list[ColumnDefParts]
+
 
 class BaseStatement:
     def __init__(self, tokens: list[any]):

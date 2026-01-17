@@ -1,0 +1,1 @@
+1. Capture the column data type in create statement normalizer

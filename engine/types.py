@@ -1,16 +1,20 @@
 from typing import TypedDict
 from enum import Enum
+from dataclasses import dataclass
 
-class ColumnType(str):
+
+
+
+@dataclass
+class DataType(str):
     INT = "INT"
-    VARCHAR = "VARCHAR"
+    TEXT = "TEXT"
     BOOLEAN = "BOOLEAN"
     DATE = "DATE"
     FLOAT = "FLOAT"
 
-Column = TypedDict("Column", {
-    "name": str,
-    "type": ColumnType,
-    "primary_key": bool,
-    "unique": bool
-})
+@dataclass
+class ColumnDefParts:
+    name: str
+    type: DataType
+    constraints: list[str] | None = None
