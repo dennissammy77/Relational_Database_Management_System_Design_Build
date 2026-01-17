@@ -73,7 +73,6 @@ Data Types
 - VARCHAR
 - BOOLEAN
 - DATE
-- TIMESTAMP
 - FLOAT
 
 Constraints
