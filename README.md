@@ -34,6 +34,12 @@ These are excluded to keep the system understandable and well-implemented within
 ## High - Level Design
 /rdbms
     |__ engine/
+        |__ types.py
+        |__ Normalizer.py
+        |__ Parser.py
+        |__ Executor.py
+        |__ Table.py
+        |__ Database.py
     |__ storage/
     |__ repl/
     |__ api/
