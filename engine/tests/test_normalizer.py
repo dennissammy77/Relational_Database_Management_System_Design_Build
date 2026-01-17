@@ -1,5 +1,6 @@
 import pytest
-from engine.normalizer import Normalizer, SelectParts, WhereClause
+from engine.normalizer.normalizer import Normalizer
+from engine.normalizer.base import SelectParts, WhereClause
 
 class TestSelectNormalization:
     def test_normalize_select_normal(self) -> None:
@@ -80,3 +81,38 @@ class TestSelectNormalization:
             table="users",
             where=WhereClause(left="id", operator="=", right=1)
         )
+
+class TestCreateNormalization:
+    def test_normalize_create(self) -> None:
+        sql = "CREATE TABLE users (id INT, name VARCHAR(255))"
+        normalizer = Normalizer(sql)
+        assert normalizer.normalize() == CreateParts(
+            table="users",
+            columns=["id", "name"],
+        )
+        
+    def test_normalize_create_with_missing_columns(self) -> None:
+        sql = "CREATE TABLE users"
+        normalizer = Normalizer(sql)
+        assert normalizer.normalize() == CreateParts(
+            table="users",
+            columns=[],
+        )
+    
+    def test_normalize_create_with_invalid_table_name(self) -> None:
+        sql = "CREATE TABLE (id INT, name VARCHAR(255))"
+        normalizer = Normalizer(sql)
+        assert normalizer.normalize() == CreateParts(
+            table="",
+            columns=["id", "name"],
+        )
+
+    def test_normalize_create_with_invalid_columns(self) -> None:
+        sql = "CREATE TABLE users (id INT, name VARCHAR(255))"
+        normalizer = Normalizer(sql)
+        assert normalizer.normalize() == CreateParts(
+            table="users",
+            columns=["id", "name"],
+        )
+
+    
