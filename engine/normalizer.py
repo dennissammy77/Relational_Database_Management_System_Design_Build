@@ -35,6 +35,7 @@ class Normalizer:
         stype = self.get_statement_type()
         if stype == StatementType.SELECT:
             print("Select statement: ", self.selectStatement(self.parsed[0].tokens))
+            return self.selectStatement(self.parsed[0].tokens)
     
     def get_statement_type(self) -> StatementType:
         """
@@ -121,42 +122,59 @@ class Normalizer:
     
     def _extract_where(self, tokens) -> Optional[WhereClause]:
         """
-            Extract where clause from SELECT statement
+        Extract where clause from SELECT statement.
+        Handles both compact (id=1) and spaced (id = 1) WHERE clauses.
         """
         where_obj = None
         for token in tokens:
             if isinstance(token, Where):
                 where_obj = token
-                break
+                break   
 
         if where_obj is None:
             return None
-        
-        # Find comparison tokens
+
+        # Try to find a Comparison token (handles cases like "id=1" with no spaces)
         comparison_tokens = [token for token in where_obj.tokens if isinstance(token, Comparison)]
 
-        if len(comparison_tokens) != 1:
-            raise ValueError("Invalid WHERE clause")
+        if len(comparison_tokens) == 1:
+            comparison = comparison_tokens[0]
+            parts = [part for part in comparison.tokens if not part.is_whitespace and part.ttype is not Punctuation]
+            
+            if len(parts) < 3:
+                raise ValueError("Invalid WHERE clause: insufficient parts in comparison")
+                
+            left = parts[0].value.strip()
+            operator = parts[1].value.strip()
+            right_raw = parts[2].value.strip()
+        elif len(comparison_tokens) == 0:
+            non_whitespace_tokens = [
+                token for token in where_obj.tokens 
+                if not token.is_whitespace
+            ]
 
-        comparison = comparison_tokens[0]
-        parts = [part for part in comparison.tokens if not part.is_whitespace and part.ttype is not Punctuation]
-        left = parts[0].value.strip()
-        operator = parts[1].value.strip()
-        right_raw = parts[2].value.strip()
+            comparison_parts = non_whitespace_tokens[1:] if len(non_whitespace_tokens) > 1 else non_whitespace_tokens
+            
+            if len(comparison_parts) < 3:
+                raise ValueError("Invalid WHERE clause: insufficient tokens")
+            
+            left = comparison_parts[0].value.strip()
+            operator = comparison_parts[1].value.strip()
+            right_raw = comparison_parts[2].value.strip()
+        else:
+            raise ValueError(f"Invalid WHERE clause: found {len(comparison_tokens)} comparison tokens")
 
         right: Union[str, int, float, bool]
         if right_raw.startswith("'") and right_raw.endswith("'"):
             right = right_raw[1:-1]
         elif right_raw.startswith('"') and right_raw.endswith('"'):
             right = right_raw[1:-1]
+        elif right_raw.lower() in ("true", "false"):
+            right = right_raw.lower() == "true"
         elif right_raw.isdigit():
             right = int(right_raw)
-        elif right_raw.replace('.', '', 1).isdigit():
+        elif right_raw.replace('.', '', 1).isdigit() and right_raw.count('.') <= 1:
             right = float(right_raw)
-        elif right_raw.lower() == "true":
-            right = True
-        elif right_raw.lower() == "false":
-            right = False
         else:
             right = right_raw
 

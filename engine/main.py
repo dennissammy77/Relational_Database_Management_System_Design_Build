@@ -1,7 +1,7 @@
 from normalizer import Normalizer
 
 def main():
-    normalizer = Normalizer("SELECT * FROM users WHERE id = 1")
+    normalizer = Normalizer("SELECT * FROM users WHERE active = true")
     normalizer.normalize()
 
 if __name__ == "__main__":
