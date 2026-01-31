@@ -1,7 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass
 from typing import Union, Optional
-from sqlparse.sql import Identifier, Where, Comparison
+from sqlparse.sql import Identifier, Where, Comparison, Parenthesis, IdentifierList
 from sqlparse.tokens import Keyword, DML, DDL, Punctuation
 from engine.types import ColumnDefParts
 

@@ -2,9 +2,6 @@ from typing import TypedDict
 from enum import Enum
 from dataclasses import dataclass
 
-
-
-
 @dataclass
 class DataType(str):
     INT = "INT"

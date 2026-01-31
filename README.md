@@ -132,3 +132,9 @@ AI tools may be used for:
 - Design discussion
 
 All architectural decisions and final implementations are the author’s own.
+
+### Resources
+https://www.postgresql.org/docs/current/query-path.html
+https://cstack.github.io/db_tutorial/parts/part1.html
+https://www.sqlite.org/arch.html
+https://sqlparse.readthedocs.io/en/latest/analyzing.html#base-classes
