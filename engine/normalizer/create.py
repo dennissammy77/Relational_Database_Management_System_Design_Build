@@ -46,6 +46,8 @@ class CreateStatement(BaseStatement):
         print("Column tokens: ", column_tokens)
         if not column_tokens:
             return []
+        if len(column_tokens) == 1:
+            raise ValueError("Column name not found")
 
         # print("Column tokens: ", column_tokens)
         columns: list[ColumnDefParts] = []
@@ -57,8 +59,9 @@ class CreateStatement(BaseStatement):
             if isinstance(token, Identifier):
                 continue
             if isinstance(token, Parenthesis):
-                # middle_tokens = token.tokens[1:-1]
-                # print("Parenthesis: ", token) 
+
+                middle_tokens = token.tokens[1:-1]
+                print("Parenthesis: ", middle_tokens) 
                 # TODO: 
                 # 1. Extract column name
                 # 2. Extract column type
@@ -75,10 +78,13 @@ class CreateStatement(BaseStatement):
                     if token.ttype is Whitespace:
                         continue
                     if isinstance(token, Identifier):
+                        print("Identifier: ", token)
+                        col_name = self._identify_column_name(token)
                         if self._identifier_name(token) in [col.name for col in column_def_parts]:
                             raise ValueError("Duplicate column name")
                         column_def_parts.append(ColumnDefParts(self._identifier_name(token), ""))
                     if token.value in [DataType.INT, DataType.TEXT, DataType.BOOLEAN, DataType.DATE, DataType.FLOAT]:
+                        print("DataType: ", token)
                         if column_def_parts:
                             column_def_parts[-1].type = token.value.strip()
                     if isinstance(token, Comparison):
@@ -86,10 +92,38 @@ class CreateStatement(BaseStatement):
                     if isinstance(token, Parenthesis):
                         continue
                     if isinstance(token, IdentifierList):
-                        continue
-                # print("Column def parts: ", column_def_parts)
-                columns.extend(column_def_parts )
+                        for identifier in token.get_identifiers():
+                            col_name = self._identify_column_name(identifier)
+                            if col_name in [col.name for col in column_def_parts]:
+                                raise ValueError("Duplicate column name")
+                            column_def_parts.append(ColumnDefParts(col_name, ""))
+                        
+                err_msg = self._validate_columns(column_def_parts)
+                if not err_msg:
+                    columns.extend(column_def_parts)
+                else:
+                    raise ValueError(err_msg)
         return columns
 
+    def _validate_columns(self, columns: list[ColumnDefParts]):
+        """
+            Validate columns if name and type are present
+        """
+        print("Validating columns: ", columns)
+        err_msg = ""
+        for column in columns:
+            if not column.name:
+                err_msg += f"Column name is missing for column {column}, "
+            if not column.type:
+                err_msg += f"Column type is missing for column {column.name}, "
+
+        if err_msg:
+            print("Error in columns: ", err_msg)
+            return err_msg
+        return None
         
-        
+    def _identify_column_name(self, token: Identifier) -> str:
+        """
+            Identify column name from token
+        """
+        return self._identifier_name(token)
