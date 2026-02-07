@@ -133,4 +133,18 @@ class TestCreateNormalization:
         normalizer = Normalizer(sql)
         with pytest.raises(ValueError):
             normalizer.normalize()
+
+    def test_create_table_nested_parenthesis(self) -> None:
+        """
+        Test that the create table statement is normalized correctly
+        """
+        sql = "CREATE TABLE users (id INT, name VARCHAR(255))"
+        normalizer = Normalizer(sql)
+        assert normalizer.normalize() == CreateParts(
+            table="users",
+            columns=[
+                ColumnDefParts(name="id", type="INT", constraints=None),
+                ColumnDefParts(name="name", type="VARCHAR(255)", constraints=None)
+            ],
+        )
     

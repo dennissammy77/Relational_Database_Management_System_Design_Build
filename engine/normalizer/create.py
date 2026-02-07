@@ -8,6 +8,11 @@ from engine.types import DataType, ColumnDefParts
 class CreateStatement(BaseStatement):
     columns: list[ColumnDefParts] = []
     column_chunks: list[list] = []
+
+    """
+        TODO: 
+        1. VARCCHAR test is failing
+    """
     
     def normalize(self):
         """
@@ -97,9 +102,9 @@ class CreateStatement(BaseStatement):
         middle_tokens = token.tokens
         first_token = middle_tokens[0]
         last_token = middle_tokens[-1]
-        if first_token == "(" and last_token == ")":
+        if first_token.value == "(" and last_token.value == ")":
             middle_tokens = middle_tokens[1:-1]
-            
+
         if isinstance(middle_tokens[0], IdentifierList):
             for token in middle_tokens[0].get_identifiers():
                 col_name = self._identifier_name(token)
@@ -109,8 +114,8 @@ class CreateStatement(BaseStatement):
 
         else:
             token_chunks = self.split_on_commas_chunks(middle_tokens)
-            # for i, chunk in enumerate(token_chunks):
-            #     print(f"Chunk {i}: ", chunk)
+            for i, chunk in enumerate(token_chunks):
+                print(f"Chunk {i}: ", chunk)
                 
             for chunk in token_chunks:
                 for token in chunk:
@@ -119,7 +124,7 @@ class CreateStatement(BaseStatement):
                         if col_name in [col.name for col in self.columns]:
                             raise ValueError("Duplicate column name")
                         self.columns.append(ColumnDefParts(col_name, ""))
-                    if token.value in [DataType.INT, DataType.TEXT, DataType.BOOLEAN, DataType.DATE, DataType.FLOAT]:
+                    if token.value in [DataType.INT, DataType.TEXT, DataType.BOOLEAN, DataType.DATE, DataType.FLOAT, DataType.VARCHAR]:
                         self.columns[-1].type = token.value.strip()
 
     def split_on_commas_chunks(self, tokens):
@@ -129,6 +134,7 @@ class CreateStatement(BaseStatement):
         current_chunk = []
         depth = 0
         for char in tokens:
+            print("Char: ", char.value)
             if char.value == "(":
                 depth += 1
                 current_chunk.append(char)
@@ -141,6 +147,9 @@ class CreateStatement(BaseStatement):
             else:
                 current_chunk.append(char)
         
+            print("Current chunk: ", current_chunk)
+            print("Depth: ", depth)
+            
         if current_chunk:
             self.column_chunks.append(current_chunk)
 
