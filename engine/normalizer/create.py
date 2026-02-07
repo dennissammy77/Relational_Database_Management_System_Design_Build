@@ -43,8 +43,9 @@ class CreateStatement(BaseStatement):
         """
         
         column_tokens = self.tokens[self._find_keyword("TABLE") + 2 :]
-        if not column_tokens or len(column_tokens) < 2:
-            raise ValueError("Columns not found")
+        print("Column tokens: ", column_tokens)
+        if not column_tokens:
+            return []
 
         # print("Column tokens: ", column_tokens)
         columns: list[ColumnDefParts] = []
@@ -56,7 +57,17 @@ class CreateStatement(BaseStatement):
             if isinstance(token, Identifier):
                 continue
             if isinstance(token, Parenthesis):
-                # print("Parenthesis: ", token)
+                # middle_tokens = token.tokens[1:-1]
+                # print("Parenthesis: ", token) 
+                # TODO: 
+                # 1. Extract column name
+                # 2. Extract column type
+                # 3. Extract column constraints
+                # 4. Validate column
+                # 5. Add column to column_def_parts
+                # 6. Check if type is missing
+                # 7. Check if column name is missing
+
                 column_def_parts: list[ColumnDefParts] = []
                 for token in token.tokens:
                     if token.value == '(' or token.value == ')':
@@ -78,8 +89,6 @@ class CreateStatement(BaseStatement):
                         continue
                 # print("Column def parts: ", column_def_parts)
                 columns.extend(column_def_parts )
-        # print("Columns: ", columns)
-        self._validate_columns(columns)
         return columns
 
         
