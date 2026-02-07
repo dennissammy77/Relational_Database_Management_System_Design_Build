@@ -84,6 +84,20 @@ class TestSelectNormalization:
         )
 
 class TestCreateNormalization:
+    def test_create_table(self) -> None:
+        """
+        Test that the create table statement is normalized correctly
+        """
+        sql = "CREATE TABLE users (id INT, name TEXT)"
+        normalizer = Normalizer(sql)
+        assert normalizer.normalize() == CreateParts(
+            table="users",
+            columns=[
+                ColumnDefParts(name="id", type="INT", constraints=None),
+                ColumnDefParts(name="name", type="TEXT", constraints=None)
+            ],
+        )
+    
     def test_create_table_missing_name(self) -> None:
         """
         Test that the create table statement raises an error if the table name is missing
@@ -102,20 +116,6 @@ class TestCreateNormalization:
         with pytest.raises(ValueError):
             normalizer.normalize()
 
-    def test_create_table(self) -> None:
-        """
-        Test that the create table statement is normalized correctly
-        """
-        sql = "CREATE TABLE users (id INT, name TEXT)"
-        normalizer = Normalizer(sql)
-        assert normalizer.normalize() == CreateParts(
-            table="users",
-            columns=[
-                ColumnDefParts(name="id", type="INT", constraints=None),
-                ColumnDefParts(name="name", type="TEXT", constraints=None)
-            ],
-        )
-
     def test_create_table_with_same_column_name(self) -> None:
         """
         Test that the create table statement raises an error if there are duplicate column names
@@ -129,7 +129,7 @@ class TestCreateNormalization:
         """
         Test that the create table statement raises an error if there is a missing type
         """
-        sql = "CREATE TABLE users (id, name)"
+        sql = "CREATE TABLE users (id , name)"
         normalizer = Normalizer(sql)
         with pytest.raises(ValueError):
             normalizer.normalize()
