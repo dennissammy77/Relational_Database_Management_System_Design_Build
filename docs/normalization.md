@@ -35,6 +35,7 @@ Supported SQL Statement Types
 - INSERT
 - UPDATE
 - DELETE
+- CREATE TABLE
 
 SELECT
 - Column lists (SELECT id, name)

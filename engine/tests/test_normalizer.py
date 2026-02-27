@@ -134,7 +134,7 @@ class TestCreateNormalization:
         with pytest.raises(ValueError):
             normalizer.normalize()
 
-    def test_create_table_nested_parenthesis(self) -> None:
+    def test_create_table_with_parenthesis_in_type(self) -> None:
         """
         Test that the create table statement is normalized correctly
         """

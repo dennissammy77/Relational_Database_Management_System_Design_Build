@@ -36,7 +36,6 @@ These are excluded to keep the system understandable and well-implemented within
     |__ engine/
         |__ types.py
         |__ Normalizer.py
-        |__ Parser.py
         |__ Executor.py
         |__ Table.py
         |__ Database.py

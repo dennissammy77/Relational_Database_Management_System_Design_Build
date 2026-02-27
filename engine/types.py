@@ -9,7 +9,7 @@ class DataType(str):
     BOOLEAN = "BOOLEAN"
     DATE = "DATE"
     FLOAT = "FLOAT"
-    VARCHAR = "VARCHAR"
+    VARCHAR = "VARCHAR(255)"
 
 @dataclass
 class ColumnDefParts:
